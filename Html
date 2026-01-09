@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IMURLT - Image to URL Converter</title>
+<meta name="description" content="Upload image and get direct URL instantly">
+
+<style>
+body{
+  background:#0f172a;
+  color:#fff;
+  font-family:Arial, sans-serif;
+  text-align:center;
+  margin:0;
+  padding:0;
+}
+.box{
+  background:#020617;
+  padding:20px;
+  max-width:400px;
+  margin:30px auto;
+  border-radius:10px;
+}
+input,button{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:5px;
+  border:none;
+  font-size:16px;
+}
+.upload-btn{ background:#22c55e; color:#fff; }
+.copy-btn{ background:#38bdf8; color:#000; }
+.share-btn{ background:#facc15; color:#000; }
+.ad-box{ margin:15px 0; }
+#status{ margin-top:10px; }
+</style>
+
+<!-- ================= MONETAG ADS SCRIPT ================= -->
+<!-- Replace this with your Monetag script from dashboard -->
+<<script src="https://example.monetag.com/script.js"></script>
+<!-- ===================================================== -->
+</head>
+
+<body>
+
+<h2>IMURLT – Image to URL</h2>
+
+<!-- 🔴 TOP AD -->
+<div class="ad-box">
+<!-- Monetag ad will show here -->
+</div>
+
+<div class="box">
+
+<input type="file" id="image">
+
+<button class="upload-btn" onclick="uploadImage()">Upload Image</button>
+
+<p id="status"></p>
+
+<input type="text" id="url" placeholder="Image URL will appear here" readonly>
+
+<button class="copy-btn" onclick="copyURL()">Copy URL</button>
+
+<button class="share-btn" onclick="shareLink()">Share</button>
+
+</div>
+
+<!-- 🔴 BOTTOM AD -->
+<div class="ad-box">
+<!-- Monetag ad will show here -->
+</div>
+
+<script>
+// ====== ImgBB API KEY ======
+const API_KEY = "481ca50b9f6baaff6ac1e1e4fe347cbd";
+
+// ====== IMAGE UPLOAD FUNCTION ======
+function uploadImage(){
+  const file = document.getElementById("image").files[0];
+  if(!file){
+    alert("Select image first");
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append("image", file);
+
+  document.getElementById("status").innerText = "Uploading...";
+
+  fetch("https://api.imgbb.com/1/upload?key=" + API_KEY, {
+    method: "POST",
+    body: formData
+  })
+  .then(res => res.json())
+  .then(data => {
+    document.getElementById("url").value = data.data.url;
+    document.getElementById("status").innerText = "Upload Successful ✅";
+  })
+  .catch(() => {
+    document.getElementById("status").innerText = "Upload Failed ❌";
+  });
+}
+
+// ====== COPY URL FUNCTION ======
+function copyURL(){
+  const url = document.getElementById("url").value;
+  if(!url){
+    alert("No URL to copy");
+    return;
+  }
+  navigator.clipboard.writeText(url);
+  document.getElementById("status").innerText = "URL Copied ✅";
+}
+
+// ====== SHARE BUTTON FUNCTION ======
+function shareLink(){
+  const url = document.getElementById("url").value;
+  if(!url){
+    alert("Upload image first");
+    return;
+  }
+
+  // ✅ Modern Share API for mobile/browser/Android WebView
+  if(navigator.share){
+    navigator.share({
+      title: "IMURLT Image Link",
+      text: "Check out this image!",
+      url: url
+    }).then(() => {
+      console.log("Shared successfully");
+    }).catch(() => {
+      alert("Share cancelled or failed");
+    });
+  } else {
+    // Fallback for old browsers: open WhatsApp
+    window.open("https://wa.me/?text=" + encodeURIComponent("Check this image: " + url), "_blank");
+  }
+}
+</script>
+
+</body>
+</html>
